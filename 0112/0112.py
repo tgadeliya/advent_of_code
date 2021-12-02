@@ -29,7 +29,6 @@ def solution_part2(input):
 if __name__ == "__main__":
     input1 = get_input1()
     solution_part1(input1)
-    test = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
     solution_part2(input1)
 
 
