@@ -32,7 +32,6 @@ def solution_part2(input):
     print(depth, start_pos, start_pos[0] * depth)
 
 
-
 if __name__ == "__main__":
     input1 = get_input1()
     solution_part1(input1)
