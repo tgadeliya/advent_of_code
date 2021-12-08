@@ -1,5 +1,3 @@
-
-
 NUM2SEG = {
     0: 6,
     1: 2,
@@ -11,7 +9,6 @@ NUM2SEG = {
     8: 7,
     9: 6
 }
-
 seg2NUM = {
     2: 1,
     4: 4,
@@ -61,23 +58,6 @@ def get_number_given_inp(seg, out):
     return int(res)
 
 def restore_given_seg(seg):
-    # 22222
-    # 3   1
-    # 3   1
-    # 3   1
-    # 44444
-    # 5   7
-    # 5   7
-    # 5   7
-    # 66666
-    # len2num = {
-    #     2: [1],
-    #     3: [7],
-    #     4: [4],
-    #     5: [2,3,5],
-    #     6: [0,6,9],
-    #     7: [8],
-    # }
 
     seg_len = [len(s) for s in seg]
 
@@ -89,12 +69,8 @@ def restore_given_seg(seg):
     }
 
     len2seqs = {
-        2: [num2seqs[1]],
-        3: [num2seqs[7]],
-        4: [num2seqs[4]],
         5: [set(s) for s in seg if len(s) == 5],
         6: [set(s) for s in seg if len(s) == 6],
-        7: [num2seqs[8]],
     }
 
     num2seqs[6] = [s for s in len2seqs[6] if abs(len(s - num2seqs[1]) - len(s)) == 1][0]
