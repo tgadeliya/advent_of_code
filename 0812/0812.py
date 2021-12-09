@@ -25,7 +25,7 @@ def get_input(filename):
 
 def get_input2(filename):
     with open(filename) as f:
-        input =[[x.split() for x in l.split(" | ")] for l in  f.read().splitlines()]
+        input =[[x.split() for x in l.split(" | ")] for l in f.read().splitlines()]
     return input
 
 
@@ -58,9 +58,7 @@ def get_number_given_inp(seg, out):
     return int(res)
 
 def restore_given_seg(seg):
-
     seg_len = [len(s) for s in seg]
-
     num2seqs = {
         1: set(seg[seg_len.index(2)]),
         4: set(seg[seg_len.index(4)]),
