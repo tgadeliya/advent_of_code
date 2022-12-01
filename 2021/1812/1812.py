@@ -1,11 +1,12 @@
 from math import floor, ceil
 import typing as T
 import json
+from copy import deepcopy
 
 
 class SFN:
     def __init__(self, val, d=0, parent=None, side=None):
-        self.init_val = val
+        self.init_val = deepcopy(val)
         self.side = side
         self.d = d
         self.parent = parent
@@ -21,13 +22,12 @@ class SFN:
     def __repr__(self):
         return f" [{self.l},{self.r}]"
 
-    def __add__(self, other):
-        l = self.init_val
-        r = other.init_val
-        obj = SFN([l, r], 0)
-
-        return obj
-
+def add (n1, n2):
+    val1 = n1
+    val2 = n2
+    n = SFN([val1, val2])
+    n = reduce_alt(n)
+    return n
 
 stop_explode_search = False
 stop_split_search = False
@@ -52,14 +52,13 @@ def split(N):
                 N.r = get_split_num(N, "r")
             return N
         else:
-            N.l = split(N.l)
-            N.r = split(N.r)
+            N.l = split_num(N.l)
+            N.r = split_num(N.r)
         return N
 
     res = split_num(N)
-    print("After split: ", res)
+    # print("After split: ", res)
     return res
-
 
 def swap_side(s):
     return "r" if s == "l" else "l"
@@ -155,36 +154,42 @@ def explode(N):
 
     global stop_explode_search
     res = find_explode_candidate(N)
-    print("After explode:", res)
+    # print("After explode:", res)
     stop_explode_search = False
     return res
 
 def reduce(N):
     def iterate_till(op, N):
-        N_prev = N
+        N_prev = deepcopy(N)
         N_act = op(N)
 
-        while N_prev != N_act:
+        while str(N_prev) != str(N_act):
             N_prev = N_act
             N_act = op(N_act)
         return N_act
 
-    global stop_explode_search
-    global stop_split_search
     while True:
 
-        N_red = N
+        N_red = deepcopy(N)
         N_red_act = iterate_till(explode, N_red)
 
         N_red_act = iterate_till(split, N_red_act)
-        stop_split_search = False
 
-        if str(N_red) == str(N_red_act):
-            break
+        if str(N_red) != str(N_red_act):
+            N_red = deepcopy(N_red_act)
         else:
-            N_red = N_red_act
+            break
 
-    return N
+    return N_red_act
+
+def reduce_alt(N):
+    nn = deepcopy(N)
+    for i in range(20):
+        for _ in range(20):
+            nn = explode(nn)
+        for _ in range(20):
+            nn = split(nn)
+    return nn
 
 def get_number_magnitude(num):
     if type(num) is int:
@@ -198,18 +203,17 @@ def get_input(filename):
     return input
 
 def get_solution1(input):
-    num_sum = input[0]  # TODO: Change to 0
+    num_sum = input[0]
     for i in range(1, len(input)):
-        num_sum += input[i]
-        num_sum = reduce(num_sum)
+        # print("   ", num_sum)
+        # print("+  ", input[i])
+        num_sum = add(num_sum, input[i])
     res = get_number_magnitude(num_sum)
     print("Solution to part1: ", res)
-
 
 def get_solution2(input):
     res = 0
     print("Solution to part2: ", res)
-
 
 def test_split():
     test = [
@@ -243,17 +247,49 @@ def test_reduce():
     test = [
         [[[[[4, 3], 4], 4], [7, [[8, 4], 9]]], [1, 1]],
     ]
-    for t in test:
-        num = SFN(t)
-        # print(num)
-        num = reduce(num)
-        # print(num)
-        print("--------")
+    # for t in test:
+    #     print("TEST:", t)
+    #     num = SFN(t)
+    #     num = reduce(num)
+    #     print("FINAL:", num)
+    #     print("--------")
+
+    n = SFN(test[0])
+    print("START: ", n)
+    for _ in range(10):
+        n = reduce(n)
+        print("REDUCED: ", n)
+    print("FINISH: ", n)
+
+def test_comp():
+    test = [
+        [[[[[4, 3], 4], 4], [7, [[8, 4], 9]]], [1, 1]],
+        [[[[0, 7], 4], [7, [[8, 4], 9]]], [1, 1]],
+    ]
+
+    num = SFN(test[0])
+    num2 = SFN(test[1])
+
+    print(num == num2)
+    print(num == num)
+
+    print(str(num) == str(num2))
+    print(str(num) == str(num))
+    print(num == deepcopy(num))
+    print(str(num) == deepcopy(str(num)))
+
+def test_add():
+    num1 = SFN([[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]])
+    num2 = SFN([2,9])
+    num3 = SFN([[[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]], [2,9]])
+    print("SUM")
+
+    num3 = reduce(num3)
+    print("F: ", num1)
+    print("S: ", )
+    print("NEW: ", num3)
 
 if __name__ == "__main__":
-    input = get_input("input_test")
-    test_reduce()
-    # test_explode()
-
-    # get_solution1(input)
+    input = get_input("input")
+    get_solution1(input)
     # get_solution2(input)
